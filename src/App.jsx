@@ -8,7 +8,8 @@ function App() {
   return (
     <>
     <Canvas style={{ height: "100vh" }}
-     camera={{ position: [0, 0, 6], fov: 60 }}>
+    //  camera={{ position: [0, 0, 6], fov: 60 }}
+     camera={{ position: [0, 0, 10], fov: 60 }}>
        <Suspense fallback={null}>
         <Animal/>
        </Suspense>

@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from "react"
 import { useFrame, useThree } from "@react-three/fiber"
 import { OrbitControls, useGLTF, useTrail, Environment } from "@react-three/drei"
-
+import gsap from "gsap"
 const Animal = () => {
 
   const { scene, nodes } = useGLTF("/model/robot.glb")
@@ -27,10 +27,10 @@ const Animal = () => {
   
   if (headRef.current) {
     headRef.current.rotation.y += 
-      (mouse.x * 0.6 - headRef.current.rotation.y) * 0.1
+      (mouse.x * 0.6 - headRef.current.rotation.y) * 0.5
 
     headRef.current.rotation.x += 
-      (-mouse.y * 0.3 - headRef.current.rotation.x) * 0.1
+      (-mouse.y * 0.3 - headRef.current.rotation.x) * 0.5
   }
 
   
@@ -42,53 +42,58 @@ const Animal = () => {
 
     
     leftArmRef.current.rotation.y += 
-      (subtleSide - leftArmRef.current.rotation.y) * 0.05
+      (subtleSide - leftArmRef.current.rotation.y) * 0.09
 
     leftArmRef.current.rotation.z += 
-      (subtleLift - leftArmRef.current.rotation.z) * 0.05
+      (subtleLift - leftArmRef.current.rotation.z) * 0.09
 
     leftArmRef.current.rotation.x =
-      Math.sin(time * 1.5) * 0.05
+      Math.sin(time * 1.5) * 0.09
   }
 
   if (rightArmRef.current) {
 
     rightArmRef.current.rotation.y += 
-      (-subtleSide - rightArmRef.current.rotation.y) * 0.05
+      (-subtleSide - rightArmRef.current.rotation.y) * 0.09
 
     rightArmRef.current.rotation.z += 
-      (-subtleLift - rightArmRef.current.rotation.z) * 0.05
+      (-subtleLift - rightArmRef.current.rotation.z) * 0.09
 
     rightArmRef.current.rotation.x =
-      Math.sin(time * 1.5 + Math.PI) * 0.05
+      Math.sin(time * 1.5 + Math.PI) * 0.09
   }
 })
 
 
-scene.traverse((child) => {
-  if (child.isMesh && child.material) {
+useEffect(() => {
+  scene.traverse((child) => {
+    if (child.isMesh && child.material) {
 
-    child.material.map = null
+      child.material.map = null
 
-    child.material.color.set("#0a0a0a")
-    child.material.metalness = 1
-    child.material.roughness = 0.15
+      child.material.color.set("#0a0a0a")
+      child.material.metalness = 1
+      child.material.roughness = 0.15
 
-   
-    child.material.envMapIntensity = 1.5
+      child.material.envMapIntensity = 1.5
 
-    child.material.needsUpdate = true
-  }
-})
+      child.material.needsUpdate = true
+    }
+  })
+}, [scene])
+const { camera } = useThree()
 
-// useEffect(() => {
-//   scene.traverse((child) => {
-//     if (child.isMesh && child.material) {
-//       child.material.envMapIntensity = 1.5
-//       child.material.needsUpdate = true
-//     }
-//   })
-// }, [scene])
+useEffect(() => {
+  camera.position.set(0, 0, 2)
+
+  gsap.to(camera.position, {
+    z: 4,
+    duration: 2,
+    ease: "power3.out"
+  })
+
+  
+}, [])
 
 
   return (
@@ -96,11 +101,12 @@ scene.traverse((child) => {
      {/* <group ref={modelRef}> */}
       <primitive object={scene} position={[0, -1.7, 0]} scale={1.1} />
       {/* </group> */}
+      
       <ambientLight intensity={0.6} />
       {/* <directionalLight position={[7, 3, 4]} intensity={8} /> */}
       <directionalLight position={[-5, 3, -5]} intensity={1} />
 
-      <OrbitControls enableZoom={false} />
+      {/* <OrbitControls enableZoom={false} /> */}
       <Environment preset="studio" intensity={1.5}/>
     </>
   )
